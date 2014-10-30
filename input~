@@ -1,0 +1,11 @@
+5000 200
+500 0.50
+1.0
+0.50
+o o
+
+           fscanf(entra,"%d %d",&nmc,&nsub); 
+           fscanf(entra,"%d %f",&n,&rho);
+           fscanf(entra,"%f",&sigma);
+           fscanf(entra,"%f ",&dpmax);
+           fscanf(entra,"%s %s",&newprog,&orden);
