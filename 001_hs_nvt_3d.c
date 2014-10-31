@@ -50,8 +50,8 @@
 	// nuevas
 	void rotacion(double,double,double,int);
 	void orientacion_init(void);
-	void orientacion_read(void)
-	void orientacion_write(void)
+	void orientacion_read(void);
+	void orientacion_write(void);
 	
         int baby(double,double,double,int);
         int traslape(double,double,double,int);
@@ -78,7 +78,9 @@ main()
         switch(newprog){
         case 'n':
           printf("Empieza configuracion nueva\n");
+          orientacion_init();
           initconf();
+        
           nmcold=0;
           ngrold=0;
           printf("\n");
@@ -89,7 +91,8 @@ main()
           leenmc();
           leeconf();
           leerdf();
-          printf("\n");
+          orientacion_read();
+          printf("\n");	
           /*getchar();*/
           break;
         default:
@@ -205,10 +208,13 @@ void initconf()
                y[i]=yt;
                z[i]=zt;
                fprintf(fp,"%f \t %f \t %f \t %d \n",x[i],y[i],z[i],i);
-               if (i == n)
-                  fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]}",x[i],y[i],z[i],sigma_m);
-               else if (i != n)
+               if (i == n){
                   fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+                  fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]}",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);}
+
+               else if (i != n){
+                  fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+                  fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);}
                printf("nace particula %d\n",i);
                i++;
             }  
@@ -284,6 +290,7 @@ void initconf()
                   printf("nace particula %d\n",i);
                   fprintf(fp,"%f\t%f\t%f\t%d\n",x[i],y[i],z[i],i);
                   fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+                  fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);
                   i++;
                   x[i]=xo2 + (j-1)*ax;
                   y[i]=yo2 + (k-1)*ay;
@@ -291,6 +298,7 @@ void initconf()
                   printf("nace particula %d\n",i);
                   fprintf(fp,"%f\t%f\t%f\t%d\n",x[i],y[i],z[i],i);
                   fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+	          fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);
                   i++;
                   x[i]=xo3 + (j-1)*ax;
                   y[i]=yo3 + (k-1)*ay;
@@ -298,16 +306,19 @@ void initconf()
                   printf("nace particula %d\n",i);
                   fprintf(fp,"%f\t%f\t%f\t%d\n",x[i],y[i],z[i],i);
                   fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+                  fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);
                   i++;
                   x[i]=xo4 + (j-1)*ax;
                   y[i]=yo4 + (k-1)*ay;
                   z[i]=zo4 + (l-1)*az;
                   printf("nace particula %d\n",i);
                   fprintf(fp,"%f\t%f\t%f\t%d\n",x[i],y[i],z[i],i);
-                  if (i != n)
+                  if (i != n){
                      fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
-                  else if (i == n)
-                     fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]}",x[i],y[i],z[i],sigma_m);
+                     fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);}
+                  else if (i == n){
+                     fprintf(fmi,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+                     fprintf(fmi,"{White, Sphere[{%f, %f, %f}, %f]}",x[i]+A1[i]*sigma_m,y[i]+A2[i]*sigma_m,z[i]+A3[i]*sigma_m,sigma_m/3);}
                   i++;
                 }
               }
@@ -533,6 +544,7 @@ void mc()
                  x[i]=xnew;
                  y[i]=ynew;
                  z[i]=znew;
+		rotacion(A1[i],  A2[i], A3[i], i);
                  acept++;
                  if (abs(x[i]) > lx2 || abs(y[i])>ly2 || abs(z[i])>lz2){
                     printf("hubo aceptacion %d \n",mov);
@@ -569,7 +581,8 @@ void mc()
         for (j=1;j<=n;j++) {
             fprintf(ff,"%f\t%f\t%f\n",x[j],y[j],z[j]);
         }
-
+	orientacion_write();
+	
         ngrtot=ngr+ngrold;
         fprintf(fnmc,"%d %d\n",nmctot,ngrtot);
 
@@ -693,10 +706,14 @@ void mathematica()
         fm = fopen("finalconf.nb", "w");
         fprintf(fm,"Graphics3D[{");
 
+	double 	s=sigma_m;
+
         for (i=1; i<n; i++){ 
             fprintf(fm,"{Red, Sphere[{%f, %f, %f}, %f]},",x[i],y[i],z[i],sigma_m);
+            fprintf(fm,"{White, Sphere[{%f, %f, %f}, %f]},",x[i]+A1[i]*s,y[i]+A2[i]*s,z[i]+A3[i]*s,s/3);
         }
-            fprintf(fm,"{Red, Sphere[{%f, %f, %f}, %f]}",x[n],y[n],z[n],sigma_m);
+            fprintf(fm,"{Red, Sphere[{%f, %f, %f}, %f]},",x[n],y[n],z[n],sigma_m);
+            fprintf(fm,"{White, Sphere[{%f, %f, %f}, %f]}",x[n]+A1[n]*s,y[n]+A2[n]*s,z[n]+A3[n]*s,s/3);
 
         fprintf(fm,"}]");
         fclose(fm);
@@ -707,14 +724,14 @@ void orientacion_init(){
 // dota de orientacion inicial a las particulas
 	int i;
 	if (orientacion_orden=='o'){
-		for(i=1; i<n; i++){
+		for(i=1; i<=n; i++){
 			A1[i]=1;
 			A2[i]=0;
 			A3[i]=0;
 		}//for
 	}//if
 	else{
-		for(i=1; i<n; i++){
+		for(i=1; i<=n; i++){
 			double ty= (double)rand()/RAND_MAX*M_PI;
 			double tz= (double)rand()/RAND_MAX*M_PI;
 			A1[i]=cos(ty)*cos(tz);
@@ -729,9 +746,9 @@ void orientacion_init(){
 
 
 void rotacion(double a1, double a2, double a3, int i){
-	double tx=(double)rand()/RAND_MAX*M_PI/180; // a lo mucho 1 grado
-	double ty=(double)rand()/RAND_MAX*M_PI/180; // se puede optimizar  RAND_MAX*M_PI/180 -> 0.0174532925
-	double tz=(double)rand()/RAND_MAX*M_PI/180;
+	double tx=(double)rand()/RAND_MAX*M_PI/2;///180; // a lo mucho 1 grado
+	double ty=(double)rand()/RAND_MAX*M_PI/2;///180; // se puede optimizar  RAND_MAX*M_PI/180 -> 0.0174532925
+	double tz=(double)rand()/RAND_MAX*M_PI/2;///180;
 	
 	double Cx=cos(tx);
 	double Sx=sin(tx);
@@ -741,10 +758,16 @@ void rotacion(double a1, double a2, double a3, int i){
 	
 	double Cz=cos(tz);
 	double Sz=sin(tz);
-
-	A1[i]=a1*(Cy*Cz)+a2*(Sx*Sy*Cz+Cx*Sz)+a3*(-Cz*Sy*Cz+Sx*Sz);
-	A2[i]=a1*(-Cy*Sz)+a2*(Cx*Cz-Sx*Sy*Sz)+a3*(Sx*Cz+Cx*Sy*Sz);
-	A3[i]=a1*(Sy)+a2*(-Cy*Sx)+a3*(Cx*Cy);
+	
+	double a1New=a1*(Cy*Cz)+a2*(Sx*Sy*Cz+Cx*Sz)+a3*(-Cz*Sy*Cz+Sx*Sz);
+	double a2New=a1*(-Cy*Sz)+a2*(Cx*Cz-Sx*Sy*Sz)+a3*(Sx*Cz+Cx*Sy*Sz);
+	double a3New=a1*(Sy)+a2*(-Cy*Sx)+a3*(Cx*Cy);
+	
+	double norm=sqrt(a1New*a1New+a2New*a2New+a3New*a3New);
+	
+	A1[i]=a1New/norm;
+	A2[i]=a2New/norm;
+	A3[i]=a3New/norm;
 
 }//termina rotacion
 
