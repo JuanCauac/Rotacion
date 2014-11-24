@@ -1,11 +1,13 @@
-100 100
-4 0.10
+1000 100
+256 0.10
 1.0
 0.50
 n d
+1.0 1.0
 
            fscanf(entra,"%d %d",&nmc,&nsub); 
            fscanf(entra,"%d %f",&n,&rho);
            fscanf(entra,"%f",&sigma);
            fscanf(entra,"%f ",&dpmax);
            fscanf(entra,"%s %s",&newprog,&orden);
+           fscanf(entra,"%f %f",&temp,&epsilon);
